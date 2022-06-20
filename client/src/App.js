@@ -1,32 +1,39 @@
 // Stylesheets
 import './App.css';
 
-// Modules
+// JS Libraries
 import React, {useState} from 'react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
 // Components
-import NavBar from './components/NavBar';
-// Views all of the pokedexes in a table
-import ViewPokedex from './components/ViewPokedex';
-// Lists out all of the pokemon in a table
 import ViewPokemonList from './components/ViewPokemonList';
+import ViewPokemon from './components/ViewPokemon';
 
 
 function App() {
-  const [pokedexList, setPokedexList] = useState([]);
   const [pokemonList, setPokemonList] = useState([]);
+  const [pokemon, setPokemon] = useState([]);
 
   return (
     <div className="App">
-      <NavBar/>
-      <ViewPokedex
-        pokedexList={pokedexList}
-        setPokedexList={setPokedexList}
-      />
-      <ViewPokemonList
-        pokemonList={pokemonList} 
-        setPokemonList={setPokemonList}
-      />
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={<ViewPokemonList
+              pokemonList={pokemonList}
+              setPokemonList={setPokemonList}
+            />}
+          />
+          <Route
+            path="/pokemon/:id"
+            element={<ViewPokemon
+              pokemon={pokemon}
+              setPokemon={setPokemon}
+            />}
+          />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 };
