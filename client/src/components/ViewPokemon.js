@@ -20,16 +20,20 @@ const ViewPokemon = (props) => {
     const [spDefense, setSPDefense] = useState("");
     const [speed, setSpeed] = useState("");
 
+    // For getting a pokemon base details.
     useEffect(() => {
         axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`)
         .then((res) => {
             //console.log(res);
-            console.log(res.data);
+            //console.log(res.data);
             setPokemon(res.data);
             //console.log(res.data.types);
             setType1(res.data.types[0].type.name);
             if (res.data.types.length > 1) {
                 setType2(res.data.types[1].type.name);
+            } else {
+                // Need to reset the value when switching to different pokemon
+                setType2("");
             }
             //console.log(res.data.stats);
             setHP(res.data.stats[0].base_stat);
@@ -40,12 +44,14 @@ const ViewPokemon = (props) => {
             setSpeed(res.data.stats[5].base_stat);
         })
         .catch((err) => console.log(err));
-    }, [id])
+    }, [id]);
 
     return (
         <>
             <NavBar/>
             <div>
+                {console.log(id)}
+                {console.log(typeof(id))}
                 <h4>{pokemon.name} - {pokemon.id}</h4>
                 <table>
                     <thead>
@@ -63,7 +69,8 @@ const ViewPokemon = (props) => {
                 </table>
                 {pokemon.sprites ? <img src={pokemon.sprites.front_default} alt='default pokemon pic'/> : null}
                 {pokemon.sprites && pokemon.sprites.front_female ? <img src={pokemon.sprites.front_female} alt='female pokemon pic'/> : null}
-                <p>Height = {pokemon.height}, Weight = {pokemon.weight}</p>
+                <p>Metric: Height = {parseInt(pokemon.height)/10} m, Weight = {parseInt(pokemon.weight)/10} kg</p>
+                <p>Imperial: Height = {parseInt(pokemon.height)*0.3281} ft, Weight = {parseInt(pokemon.weight)*0.2205} lbs</p>
                 <p>
                     Types: {type1} <span>{type2 ? <>and {type2}</> : null}</span>
                 </p>
@@ -76,6 +83,10 @@ const ViewPokemon = (props) => {
                     <li>Special Defense - {spDefense}</li>
                     <li>Speed - {speed}</li>
                 </ol>
+            </div>
+            <div>
+                {parseInt(pokemon.id)-1 > 0 ? <span><Link to={`/pokemon/${parseInt(pokemon.id)-1}`}>previous</Link> | </span> : null}
+                <Link to={`/pokemon/${parseInt(pokemon.id)+1}`}>next</Link>
             </div>
         </>
     );
