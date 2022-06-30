@@ -19,14 +19,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route
-            path="/"
+            path='/'
             element={<ViewPokemonList
               pokemonList={pokemonList}
               setPokemonList={setPokemonList}
             />}
           />
           <Route
-            path="/pokemon/:id"
+            path='/pokemon/:id'
             element={<ViewPokemon
               pokemon={pokemon}
               setPokemon={setPokemon}

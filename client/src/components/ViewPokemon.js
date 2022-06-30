@@ -11,6 +11,10 @@ const ViewPokemon = (props) => {
     const {id} = useParams();
     const {pokemon, setPokemon} = props;
 
+    // Pokemon Evolution Chain
+    const [evolutionChain, setEvolutionChain] = useState({});
+
+    // Pokemon Stats
     const [type1, setType1] = useState("");
     const [type2, setType2] = useState("");
     const [hp, setHP] = useState("");
@@ -20,10 +24,41 @@ const ViewPokemon = (props) => {
     const [spDefense, setSPDefense] = useState("");
     const [speed, setSpeed] = useState("");
 
-    // For getting a pokemon base details.
-    useEffect(() => {
-        axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`)
-        .then((res) => {
+    // For getting the evolution chain - Algorithm here is a linked list
+    const EvolutionChain = (link) => {
+        console.log(link);
+        axios.get(link).then((res) => {
+            //console.log(res);
+            //console.log(res.data);
+            //console.log(res.data.chain);
+            // First pokemon in the list
+            if (!res.data.chain.evolves_to) {
+                // Means that this pokemon doesn't evolve to or from any other pokemon.
+                setEvolutionChain({});
+            } else {
+                setEvolutionChain(res.data.chain);
+                //console.log(res.data.chain.evolves_to);
+                //console.log(res.data.chain.evolves_to[0]);
+                //console.log(res.data.chain.species);
+                // Second pokemon(s) in the list - How the previous evolves to this one
+                //console.log(res.data.chain.evolves_to[0].evolution_details);
+                //console.log(res.data.chain.evolves_to[0].evolution_details[0]);
+                //console.log(res.data.chain.evolves_to[0].evolution_details[0].trigger);
+                // Second pokemon
+                //console.log(res.data.chain.evolves_to[0].species);
+                // Second pokemon evolving to the next
+                //console.log(res.data.chain.evolves_to[0].evolves_to[0]);
+                //console.log(res.data.chain.evolves_to[0].evolves_to[0].species);
+            }
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // For getting a lot of the pokemon stats
+    const PokemonStats = (link) => {
+        // link = `https://pokeapi.co/api/v2/pokemon/${id}`
+        console.log(link);
+        axios.get(link).then((res) => {
             //console.log(res);
             //console.log(res.data);
             setPokemon(res.data);
@@ -42,6 +77,34 @@ const ViewPokemon = (props) => {
             setSPAttack(res.data.stats[3].base_stat);
             setSPDefense(res.data.stats[4].base_stat);
             setSpeed(res.data.stats[5].base_stat);
+            //List of Moves the pokemon can learn
+            //console.log(res.data.moves);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // For getting a pokemon base stats.
+    useEffect(() => {
+        // Move this stuff to another function
+        axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
+        .then((res) => {
+            //console.log(res);
+            //console.log(res.data);
+            // Needed data for the pokemon
+            //console.log(res.data.evolution_chain);
+            EvolutionChain(res.data.evolution_chain.url)
+            //console.log(res.data.generation);
+            //console.log(res.data.growth_rate);
+            //console.log(res.data.habitat);
+            //console.log(res.data.has_gender_differences);
+            //console.log(res.data.name);
+            //console.log(res.data.pokedex_numbers);
+            // To get the stats - need to see for all pokemon though
+            //console.log(res.data.varieties);
+            //console.log(res.data.varieties[0]);
+            //console.log(res.data.varieties[0].pokemon);
+            //console.log(res.data.varieties[0].pokemon.url);
+            PokemonStats(res.data.varieties[0].pokemon.url);
         })
         .catch((err) => console.log(err));
     }, [id]);
@@ -50,23 +113,10 @@ const ViewPokemon = (props) => {
         <>
             <NavBar/>
             <div>
-                {console.log(id)}
-                {console.log(typeof(id))}
+                {/*console.log(id)}
+                {console.log(typeof(id))*/}
                 <h4>{pokemon.name} - {pokemon.id}</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                {pokemon.sprites && pokemon.sprites.front_female ? <p>Left side is male and right side is female</p> : null}
                 {pokemon.sprites ? <img src={pokemon.sprites.front_default} alt='default pokemon pic'/> : null}
                 {pokemon.sprites && pokemon.sprites.front_female ? <img src={pokemon.sprites.front_female} alt='female pokemon pic'/> : null}
                 <p>Metric: Height = {parseInt(pokemon.height)/10} m, Weight = {parseInt(pokemon.weight)/10} kg</p>
@@ -85,6 +135,11 @@ const ViewPokemon = (props) => {
                 </ol>
             </div>
             <div>
+                <h4>Evolution Chain</h4>
+                {console.log(evolutionChain)}
+            </div>
+            <div>
+                <h4>In National Pokedex Order</h4>
                 {parseInt(pokemon.id)-1 > 0 ? <span><Link to={`/pokemon/${parseInt(pokemon.id)-1}`}>previous</Link> | </span> : null}
                 <Link to={`/pokemon/${parseInt(pokemon.id)+1}`}>next</Link>
             </div>
