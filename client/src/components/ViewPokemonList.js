@@ -41,17 +41,10 @@ const ViewPokemonList = (props) => {
                     <tr>
                         <th>ID Number</th>
                         <th>Pokemon Name</th>
-                        {/*<th>API Link</th>*/}
+                        <th>API Link</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/*pokemonList.length > 0 && pokemonList.map((pokemon, index) => {
-                        return (<tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{pokemon.name}</td>
-                            <td>{pokemon.url}</td>
-                        </tr>)
-                    })*/}
                     {pokemonList.length > 0 && pokemonList.map((pokemon, index) => {
                         return (<tr key={index}>
                             <td>{pokemon.entry_number}</td>
@@ -60,19 +53,11 @@ const ViewPokemonList = (props) => {
                                     {pokemon.pokemon_species.name}
                                 </Link>
                             </td>
-                            {/*<td>{pokemon.pokemon_species.name}</td>*/}
                             <td>{pokemon.pokemon_species.url}</td>
                         </tr>)
                     })}
                 </tbody>
             </table>
-            {/* List to see all of the pokemon 
-            <ol>
-                {pokemonList.length > 0 && pokemonList.map((pokemon, index) => {
-                    return (<li key={index}>{pokemon.name}</li>)
-                })}
-            </ol>
-            */}
         </div>
     );
 };
