@@ -43,18 +43,35 @@ const ViewPokemon = (props) => {
                     console.log(arr);
                     var new_arr = [];
                     for (var i = 0; i < arr.length; i++) {
-                        //console.log(res.data.chain.evolves_to[0].evolution_details);
+                        console.log(res.data.chain.evolves_to[0].evolution_details);
                         //console.log(res.data.chain.evolves_to[0].evolution_details[0]);
                         //console.log(res.data.chain.evolves_to[0].evolution_details[0].trigger);
                         var evol_trig = arr[i].evolution_details[0].trigger.name;
-                        // There's a bug here look at pikachu evolution tree for fixing.
+                        // Solve bugs here
                         if (evol_trig === "level-up") {
-                            var trig_val = arr[i].evolution_details[0].min_level;
+                            if (arr[i].evolution_details[0].min_level) {
+                                var trigger_type = "level-up";
+                                var trig_val = arr[i].evolution_details[0].min_level;
+                            } else if (arr[i].evolution_details[0].min_happiness) {
+                                var trigger_type = "happiness";
+                                var trig_val = arr[i].evolution_details[0].min_happiness;
+                            }
+                        } else if (evol_trig === "use-item") {
+                            var trigger_type = "item";
+                            var trig_val = arr[i].evolution_details[0].item.name;
+                        } else if (evol_trig === "trade") {
+                            var trigger_type = "trade"
+                            if (arr[i].evolution_details[0].held_item) {
+                                var trig_val = arr[i].evolution_details[0].held_item.name;
+                            } else {
+                                var trig_val = "";
+                            }
                         }
                         var species = {
                             "name": arr[i].species.name,
                             "pokeid": arr[i].species.url.split("/")[6],
                             "evolution_trigger": evol_trig,
+                            "trigger_type": trigger_type,
                             "trig_val": trig_val
                         }
                         console.log(species["name"]);
@@ -79,7 +96,7 @@ const ViewPokemon = (props) => {
                 }
                 console.log(base_species["name"]);
                 console.log(base_species["pokeid"]);
-                //console.log(res.data.chain.evolves_to);
+                console.log(res.data.chain.evolves_to);
                 // Second Evolutions
                 console.log('Second Evolution(s):');
                 if (res.data.chain.evolves_to.length >= 1) {
@@ -213,8 +230,20 @@ const ViewPokemon = (props) => {
                                     {pk["name"]}
                                 </Link>
                                 <p>
-                                    {pk["evolution_trigger"] === "level-up" ? <span>
+                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "level-up" ? <span>
                                         Evolves into {pk["name"]} at level {pk["trig_val"]}.
+                                    </span> : null}
+                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "happiness" ? <span>
+                                        Evolves into {pk["name"]} with happiness level at {pk["trig_val"]}.
+                                    </span> : null}
+                                    {pk["evolution_trigger"] === "use-item" ? <span>
+                                        Evolves into {pk["name"]} when you give it a {pk["trig_val"]}.
+                                    </span>: null}
+                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] === "" ? <span>
+                                        Evolves into {pk["name"]} when you trade it.
+                                    </span> : null}
+                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] !== "" ? <span>
+                                        Evolves into {pk["name"]} when you trade it with a {pk["trig_val"]}.
                                     </span> : null}
                                 </p>
                             </div>
@@ -231,8 +260,20 @@ const ViewPokemon = (props) => {
                                     {pk["name"]}
                                 </Link>
                                 <p>
-                                    {pk["evolution_trigger"] === "level-up" ? <span>
+                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "level-up" ? <span>
                                         Evolves into {pk["name"]} at level {pk["trig_val"]}.
+                                    </span> : null}
+                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "happiness" ? <span>
+                                        Evolves into {pk["name"]} with happiness level at {pk["trig_val"]}.
+                                    </span> : null}
+                                    {pk["evolution_trigger"] === "use-item" ? <span>
+                                        Evolves into {pk["name"]} when you give it a {pk["trig_val"]}.
+                                    </span>: null}
+                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] === "" ? <span>
+                                        Evolves into {pk["name"]} when you trade it.
+                                    </span> : null}
+                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] !== "" ? <span>
+                                        Evolves into {pk["name"]} when you trade it with a {pk["trig_val"]}.
                                     </span> : null}
                                 </p>
                             </div>
