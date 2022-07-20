@@ -15,7 +15,7 @@ function App() {
   const [pokemon, setPokemon] = useState([]);
 
   return (
-    <div className="App">
+    <div className="App container">
       <BrowserRouter>
         <Routes>
           <Route

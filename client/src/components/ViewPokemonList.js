@@ -36,12 +36,12 @@ const ViewPokemonList = (props) => {
     return (
         <div>
             <NavBar/>
-            <table>
+            <table className='container table table-striped'>
                 <thead>
                     <tr>
                         <th>ID Number</th>
                         <th>Pokemon Name</th>
-                        <th>API Link</th>
+                        {/*<th>API Link</th>*/}
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +53,7 @@ const ViewPokemonList = (props) => {
                                     {pokemon.pokemon_species.name}
                                 </Link>
                             </td>
-                            <td>{pokemon.pokemon_species.url}</td>
+                            {/*<td>{pokemon.pokemon_species.url}</td>*/}
                         </tr>)
                     })}
                 </tbody>
