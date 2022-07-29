@@ -17,8 +17,13 @@ const ViewPokemon = (props) => {
     // Pokemon Stats
     const [type1, setType1] = useState("");
     const [type2, setType2] = useState("");
-    // index reference: 0=hp, 1=attack, 2=defense, 3=spAttack, 4=spDefense, 5=speed
-    const [stats, setStats] = useState([]);
+    const [baseEx, setBaseEx] = useState("");
+    const [hp, setHp] = useState("");
+    const [attack, setAttack] = useState("");
+    const [defense, setDefense] = useState([]);
+    const [spAttack, setSpAttack] = useState([]);
+    const [spDefense, setSpDefense] = useState([]);
+    const [speed, setSpeed] = useState([]);
 
     // For getting the evolution chain - Algorithm here is a linked list
     const EvolutionChain = (link) => {
@@ -27,7 +32,7 @@ const ViewPokemon = (props) => {
         axios.get(link).then((res) => {
             //console.log(res);
             //console.log(res.data);
-            console.log(res.data.chain);
+            //console.log(res.data.chain);
             // First pokemon in the list
             if (!res.data.chain.evolves_to) {
                 // Means that this pokemon doesn't evolve to or from any other pokemon.
@@ -35,8 +40,8 @@ const ViewPokemon = (props) => {
             } else {
                 // Will need to edit this function for pokemon that evolve differently
                 var CreateList = (arr) => {
-                    console.log('In function:');
-                    console.log(arr);
+                    //console.log('In function:');
+                    //console.log(arr);
                     var new_arr = [];
                     for (var i = 0; i < arr.length; i++) {
                         //console.log(res.data.chain.evolves_to[0].evolution_details);
@@ -80,19 +85,19 @@ const ViewPokemon = (props) => {
                             "trig_val": trig_val,
                             "time_of_day": td
                         }
-                        console.log(species["name"]);
-                        console.log(species["pokeid"]);
-                        console.log(species["evolution_trigger"]);
-                        console.log(species["trigger_type"]);
-                        console.log(species["trig_val"]);
-                        console.log(species["time_of_day"]);
+                        //console.log(species["name"]);
+                        //console.log(species["pokeid"]);
+                        //console.log(species["evolution_trigger"]);
+                        //console.log(species["trigger_type"]);
+                        //console.log(species["trig_val"]);
+                        //console.log(species["time_of_day"]);
                         new_arr.push(species);
                     }
                     return new_arr;
                 }
                 //setEvolutionChain(res.data.chain);
                 // First evolution
-                console.log('First Evolution:');
+                //console.log('First Evolution:');
                 //console.log(res.data.chain.species);
                 //console.log(res.data.chain.species.name);
                 //console.log(res.data.chain.species.url);
@@ -102,31 +107,31 @@ const ViewPokemon = (props) => {
                     "name": res.data.chain.species.name,
                     "pokeid": res.data.chain.species.url.split("/")[6]
                 }
-                console.log(base_species["name"]);
-                console.log(base_species["pokeid"]);
-                console.log(res.data.chain.evolves_to);
+                //console.log(base_species["name"]);
+                //console.log(base_species["pokeid"]);
+                //console.log(res.data.chain.evolves_to);
                 // Second Evolutions
-                console.log('Second Evolution(s):');
+                //console.log('Second Evolution(s):');
                 var group2;
                 if (res.data.chain.evolves_to.length >= 1) {
                     //console.log(res.data.chain.evolves_to[0].species);
                     //console.log(res.data.chain.evolves_to[0].species.name);
                     group2 = CreateList(res.data.chain.evolves_to);
-                    console.log(group2);
+                    //console.log(group2);
                     //console.log(res.data.chain.evolves_to[0].evolves_to);
                     //console.log(res.data.chain.evolves_to[0].evolves_to[0]);
                 } else {
                     group2 = [];
                 }
                 // Third Evolutions
-                console.log('Third Evolution(s):');
+                //console.log('Third Evolution(s):');
                 // Uncertain if there are others on other chains
                 var group3;
                 if (res.data.chain.evolves_to[0].evolves_to.length >= 1) {
                     //console.log(res.data.chain.evolves_to[0].evolves_to[0].species);
                     //console.log(res.data.chain.evolves_to[0].evolves_to[0].species.name);
                     group3 = CreateList(res.data.chain.evolves_to[0].evolves_to);
-                    console.log(group3);
+                    //console.log(group3);
                 } else {
                     group3 = [];
                 }
@@ -156,9 +161,23 @@ const ViewPokemon = (props) => {
                 // Need to reset the value when switching to different pokemon
                 setType2("");
             }
+            //console.log(`Base Experience = ${res.data.base_experience}`);
+            setBaseEx(res.data.base_experience);
             //console.log(res.data.stats);
-            setStats([res.data.stats[0].base_stat, res.data.stats[1].base_stat, res.data.stats[2].base_stat, res.data.stats[3].base_stat, res.data.stats[4].base_stat, res.data.stats[5].base_stat]);
-            //List of Moves the pokemon can learn
+            setHp(res.data.stats[0].base_stat);
+            setAttack(res.data.stats[1].base_stat);
+            setDefense(res.data.stats[2].base_stat);
+            setSpAttack(res.data.stats[3].base_stat);
+            setSpDefense(res.data.stats[4].base_stat);
+            setSpeed(res.data.stats[5].base_stat);
+            //console.log("Abilities:");
+            //console.log(res.data.abilities);
+            // Might add in forms but unsure if this is necessary
+            //console.log("List of Forms");
+            //console.log(res.data.forms);
+            //console.log("List of Games");
+            //console.log(res.data.game_indices);
+            //console.log("Moves List:");
             //console.log(res.data.moves);
         })
         .catch((err) => console.log(err));
@@ -189,6 +208,8 @@ const ViewPokemon = (props) => {
         .catch((err) => console.log(err));
     }, [id]);
 
+
+    // View of the data on a webpage
     return (
         <>
             <NavBar/>
@@ -197,7 +218,10 @@ const ViewPokemon = (props) => {
                 {console.log(typeof(id))*/}
                 {console.log(pokemon)}
                 <h3>{pokemon.name} - {pokemon.id}</h3>
-                {/* Sprites */}
+                {/* Sprites - Kind of Buggy here */}
+                {console.log("Pokemon Sprites")}
+                {console.log(pokemon.sprites)}
+                {/**/}
                 <div className='container row'>
                     <div className='col-6'>
                         {pokemon.sprites && pokemon.sprites.front_female ? <h5>Male Version</h5> : <h5>Default Version</h5>}
@@ -226,6 +250,7 @@ const ViewPokemon = (props) => {
                         <img src={pokemon.sprites.back_shiny_female} alt='female pokemon back'/>
                     </div> : null}
                 </div>
+                {/**/}
                 {/* Measurements */}
                 <table className='container table table-striped'>
                     <thead>
@@ -253,11 +278,12 @@ const ViewPokemon = (props) => {
                 <p>
                     <span>{type1}</span> <span>{type2 ? <>and {type2}</> : null}</span>
                 </p>
-                {/* Pokemon base stats */}
+                {/* Pokemon base stats and experience */}
                 <h5>Stats:</h5>
                 <table className='container table table-striped'>
                     <thead>
                         <tr>
+                            <th>Base Experience</th>
                             <th>HP</th>
                             <th>Attack</th>
                             <th>Defense</th>
@@ -266,49 +292,57 @@ const ViewPokemon = (props) => {
                             <th>Speed</th>
                         </tr>
                     </thead>
-                    <body>
+                    <tbody>
                         <tr>
-                            <td>{stats[0]}</td>
-                            <td>{stats[1]}</td>
-                            <td>{stats[2]}</td>
-                            <td>{stats[3]}</td>
-                            <td>{stats[4]}</td>
-                            <td>{stats[5]}</td>
+                            <td>{baseEx}</td>
+                            <td>{hp}</td>
+                            <td>{attack}</td>
+                            <td>{defense}</td>
+                            <td>{spAttack}</td>
+                            <td>{spDefense}</td>
+                            <td>{speed}</td>
                         </tr>
-                    </body>
+                    </tbody>
                 </table>
-                <p>
-                    {stats[0] > stats[5] ? <span>
+                {/*<p>
+                    {hp > speed ? <span>
                         Favor a {pokemon.name} who has more hp than speed.
                     </span> : null}
-                    {stats[0] < stats[5] ? <span>
+                    {hp < speed ? <span>
                         Favor a {pokemon.name} who has more speed than hp.
                     </span> : null}
-                    {stats[0] === stats[5] ? <span>
+                    {hp === speed ? <span>
                         HP and speed are generally the same for a {pokemon.name}.
                     </span> : null}
                     <span>  </span>
-                    {stats[1] > stats[3] ? <span>
+                    {attack > spAttack ? <span>
                         A {pokemon.name} with high attack should be use for battle.
                     </span> : null}
-                    {stats[1] < stats[3] ? <span>
+                    {attack < spAttack ? <span>
                         A {pokemon.name} with a high special attack should be used for battle.
                     </span> : null}
-                    {stats[1] === stats[3] ? <span>
+                    {attack === spAttack ? <span>
                         Both attack and special attack are the same for a {pokemon.name}.
                     </span> : null}
                     <span>  </span>
-                    {stats[2] > stats[4] ? <span>
+                    {defense > spDefense ? <span>
                         Also favor a {pokemon.name} who has high defense stat.
                     </span> : null}
-                    {stats[2] < stats[4] ? <span>
+                    {defense < spDefense ? <span>
                         Also favor a {pokemon.name} who has high special defense stat.
                     </span> : null}
-                    {stats[2] === stats[4] ? <span>
+                    {defense === spDefense ? <span>
                         Both defense and special defense are the same for a {pokemon.name}.
                     </span> : null}
-                </p>
+                </p>*/}
             </div>
+            {/* Abilities */}
+            {console.log("Abilities:")}
+            {console.log(pokemon.abilities)}
+            {/* Moves */}
+            {console.log("Moves:")}
+            {console.log(pokemon.moves)}
+            {/* Evolution chain */}
             {evolutionChain["group1"] ? <div>
                 <h3>Evolution Chain</h3>
                 {/*console.log('Evolution Chain:')}
@@ -381,6 +415,10 @@ const ViewPokemon = (props) => {
                     })}
                 </div> : null}
             </div> : <div><p>{pokemon.name} has no evolutions.</p></div>}
+            {/* Details about which games this pokemon is in */}
+            {console.log("Game Indices:")}
+            {console.log(pokemon.game_indices)}
+            {/* Moving through National dex order */}
             <div>
                 <h3>In National Pokedex Order</h3>
                 {parseInt(pokemon.id)-1 > 0 ? <span><Link to={`/pokemon/${parseInt(pokemon.id)-1}`}>previous</Link> | </span> : null}
