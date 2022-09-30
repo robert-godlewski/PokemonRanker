@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {Link, useParams} from 'react-router-dom';
+import {useQuery} from 'react-query';
 
 // Components
 import NavBar from './NavBar';
@@ -10,6 +11,8 @@ import NavBar from './NavBar';
 const ViewPokemon = (props) => {
     const {id} = useParams();
     const {pokemon, setPokemon} = props;
+
+    const [pokemonSpecies, setPokemonSpecies] = useState({});
 
     // Pokemon Evolution Chain
     const [evolutionChain, setEvolutionChain] = useState({});
@@ -184,14 +187,18 @@ const ViewPokemon = (props) => {
     };
 
     // For getting a pokemon information
+    // Noncached
+    /*
     useEffect(() => {
         axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
         .then((res) => {
-            //console.log(res);
-            //console.log(res.data);
+            console.log(res);
+            console.log(res.data);
+            console.log(res.data.base_happiness);
+            console.log(res.data.capture_rate);
             // Needed data for the pokemon
             //console.log(res.data.evolution_chain);
-            EvolutionChain(res.data.evolution_chain.url)
+            //EvolutionChain(res.data.evolution_chain.url)
             //console.log(res.data.generation);
             //console.log(res.data.growth_rate);
             //console.log(res.data.habitat);
@@ -203,25 +210,139 @@ const ViewPokemon = (props) => {
             //console.log(res.data.varieties[0]);
             //console.log(res.data.varieties[0].pokemon);
             //console.log(res.data.varieties[0].pokemon.url);
-            PokemonStats(res.data.varieties[0].pokemon.url);
+            //PokemonStats(res.data.varieties[0].pokemon.url);
         })
         .catch((err) => console.log(err));
     }, [id]);
+    */
 
+    // Caching the data from the initial call
+    const [loading, setLoading] = useState(true);
+    const results = useQuery(`pokemon-species-${id}`, () => {
+        return axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
+        .then((res) => {
+            console.log(res);
+            // Base all calls off of this base data
+            console.log("All of the data from pokemon-species:")
+            console.log(res.data);
+            //console.log("Base Happiness:");
+            //console.log(res.data.base_happiness);
+            //console.log("Capture Rate:");
+            //console.log(res.data.capture_rate);
+            //console.log("Color:");
+            //console.log(res.data.color);
+            console.log("Egg Groups:");
+            console.log(res.data.egg_groups);
+            // Really want this
+            //console.log("Evolution Chain:");
+            //console.log(res.data.evolution_chain);
+            //console.log(res.data.evolution_chain.url);
+            //EvolutionChain(res.data.evolution_chain.url)
+
+            // Might want this
+            //console.log("Evolves from:");
+            //console.log(res.data.evolves_from_species);
+
+            console.log("Flavors:");
+            console.log(res.data.flavor_text_entries);
+            console.log("Form Descriptions:");
+            console.log(res.data.form_descriptions);
+            console.log("Are the Forms Switchable?");
+            console.log(res.data.forms_switchable);
+            //console.log("Gender Rate:");
+            //console.log(res.data.gender_rate);
+            console.log("Genera:");
+            console.log(res.data.genera);
+            // Really want this
+            //console.log("Generation:");
+            //console.log(res.data.generation);
+
+            // Might want this
+            //console.log("Growth Rate:");
+            //console.log(res.data.growth_rate);
+
+            // Might want this
+            //console.log("Habitat:");
+            //console.log(res.data.habitat);
+
+            // Will be usefull for gathering pokemon data
+            console.log("Gender Differences?");
+            console.log(res.data.has_gender_differences);
+            console.log("Hatch Counter:");
+            console.log(res.data.hatch_counter);
+            //console.log("ID number of the Pokemon:");
+            //console.log(res.data.id);
+            console.log("Is baby?");
+            console.log(res.data.is_baby);
+            console.log("Is a legendary Pokemon?");
+            console.log(res.data.is_legendary);
+            console.log("Is a mythical Pokemon?");
+            console.log(res.data.is_mythical);
+            // Really want this
+            //console.log("Pokemon name:")
+            //console.log(res.data.name);
+            //console.log(res.data.names);
+            //console.log("Order number:");
+            //console.log(res.data.order);
+            console.log("Pal Park Encounters:");
+            console.log(res.data.pal_park_encounters);
+            // Really want this
+            console.log("Number in available pokedexes:");
+            console.log(res.data.pokedex_numbers);
+            console.log("Shape");
+            console.log(res.data.shape);
+            // To get the stats - need to see for all pokemon though
+            console.log("Variations for this pokemon:");
+            console.log(res.data.varieties);
+            //console.log(res.data.varieties[0]);
+            //console.log(res.data.varieties[0].pokemon);
+            //console.log(res.data.varieties[0].pokemon.url);
+            //PokemonStats(res.data.varieties[0].pokemon.url);
+            setPokemonSpecies(res.data);
+            setLoading(false);
+        })
+        .catch((err) => console.log(err));
+    });
+    console.log(results);
+
+    if (loading) return <><h1>Loading..</h1></>;
 
     // View of the data on a webpage
     return (
         <>
             <NavBar/>
             <div>
-                {/*console.log(id)}
-                {console.log(typeof(id))*/}
-                {console.log(pokemon)}
-                <h3>{pokemon.name} - {pokemon.id}</h3>
+                {console.log(id)}
+                {console.log(typeof(id))}
+                {console.log(pokemonSpecies)}
+                {/*console.log(pokemon)*/}
+                <h3>{pokemonSpecies.name} - {id}</h3>
+                <div className='container row'>
+                    <div className='col-6 border'>
+                        <h6>Details:</h6>
+                        <p>Base Happiness = {pokemonSpecies.base_happiness}</p>
+                        <p>Capture Rate = {pokemonSpecies.capture_rate}</p>
+                        <p>Color = {pokemonSpecies.color.name} - {pokemonSpecies.color.url}</p>
+                        {console.log(pokemonSpecies.egg_groups)}
+                        <p>Evolution Chain url = {pokemonSpecies.evolution_chain.url}</p>
+                        {pokemonSpecies.evolves_from_species ? <p>Evolves from {pokemonSpecies.evolves_from_species}</p> : null}
+                        {console.log(pokemonSpecies.flavor_text_entries)}
+                        {console.log(pokemonSpecies.form_descriptions)}
+                        {console.log(pokemonSpecies.forms_switchable)}
+                        <p>Gender Rate = {pokemonSpecies.gender_rate}</p>
+                        {console.log(pokemonSpecies.genera)}
+                        <p>Generation introduced = {pokemonSpecies.generation.name} - {pokemonSpecies.generation.url}</p>
+                        <p>Growth Rate = {pokemonSpecies.growth_rate.name} - {pokemonSpecies.growth_rate.url}</p>
+                        <p>Habitat = {pokemonSpecies.habitat.name} - {pokemonSpecies.habitat.url}</p>
+                    </div>
+                    <div className='col-6 border'>
+                        <p>Put Sprites here....</p>
+                    </div>
+                </div>
                 {/* Sprites - Kind of Buggy here */}
                 {console.log("Pokemon Sprites")}
                 {console.log(pokemon.sprites)}
-                {/**/}
+                {/**}
                 <div className='container row'>
                     <div className='col-6'>
                         {pokemon.sprites && pokemon.sprites.front_female ? <h5>Male Version</h5> : <h5>Default Version</h5>}
@@ -250,7 +371,7 @@ const ViewPokemon = (props) => {
                         <img src={pokemon.sprites.back_shiny_female} alt='female pokemon back'/>
                     </div> : null}
                 </div>
-                {/**/}
+                {**/}
                 {/* Measurements */}
                 <table className='container table table-striped'>
                     <thead>
@@ -343,20 +464,20 @@ const ViewPokemon = (props) => {
             {console.log("Moves:")}
             {console.log(pokemon.moves)}
             {/* Evolution chain */}
-            {evolutionChain["group1"] ? <div>
+            {/*evolutionChain["group1"] ? <div>
                 <h3>Evolution Chain</h3>
-                {/*console.log('Evolution Chain:')}
-                {console.log(evolutionChain)*/}
+                {console.log('Evolution Chain:')}
+                {console.log(evolutionChain)}
                 <div>
                     <h4>Base evolution</h4>
-                    {/*console.log(evolutionChain["group1"])*/}
+                    {console.log(evolutionChain["group1"])}
                     <Link to={`/pokemon/${parseInt(evolutionChain["group1"]["pokeid"])}`}>
                         {evolutionChain["group1"]["name"]}
                     </Link>
                 </div>
                 <div>
                     <h4>Evolutions of {evolutionChain["group1"]["name"]}</h4>
-                    {/*console.log(evolutionChain["group2"])*/}
+                    {console.log(evolutionChain["group2"])}
                     {evolutionChain["group2"].map((pk, index) => {
                         return (
                             <div key={index}>
@@ -386,7 +507,7 @@ const ViewPokemon = (props) => {
                 </div>
                 {evolutionChain["group3"].length >= 1 ? <div>
                     <h4>Last Evolution Group</h4>
-                    {/*console.log(evolutionChain["group3"])*/}
+                    {console.log(evolutionChain["group3"])}
                     {evolutionChain["group3"].map((pk, index) => {
                         return (
                             <div key={index}>
@@ -414,7 +535,7 @@ const ViewPokemon = (props) => {
                         )
                     })}
                 </div> : null}
-            </div> : <div><p>{pokemon.name} has no evolutions.</p></div>}
+            </div> : <div><p>{pokemon.name} has no evolutions.</p></div>}*/}
             {/* Details about which games this pokemon is in */}
             {console.log("Game Indices:")}
             {console.log(pokemon.game_indices)}

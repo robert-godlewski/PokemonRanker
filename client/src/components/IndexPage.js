@@ -1,14 +1,17 @@
 // JS Library
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {Link} from 'react-router-dom'
+import {useQuery} from 'react-query';
 
 
 const IndexPage = (props) => {
     const {pokedexList, setPokedexList} = props;
 
+    // Non cached version
+    /*
     useEffect(() => {
-        axios.get("https://pokeapi.co/api/v2/pokedex/?limit=28")
+        axios.get("https://pokeapi.co/api/v2/pokedex/?limit=30")
         .then((res) => {
             console.log(res);
             console.log(res.data);
@@ -17,6 +20,24 @@ const IndexPage = (props) => {
         })
         .catch((err) => {console.log(err)});
     }, []);
+    */
+
+    // Cached data
+    const [loading, setLoading] = useState(true);
+    const result = useQuery("pokedexList", () => {
+        return axios.get("https://pokeapi.co/api/v2/pokedex/?limit=30")
+        .then((res) => {
+            console.log(res);
+            console.log(res.data);
+            console.log(res.data.results);
+            setPokedexList(res.data.results);
+            setLoading(false);
+        })
+        .catch((err) => {console.log(err)});
+    });
+    console.log(result);
+
+    if (loading) return <><h1>Loading..</h1></>;
 
     return(
         <>
@@ -34,7 +55,8 @@ const IndexPage = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {pokedexList.length > 0 && pokedexList.map((pokedex, index) => {
+                        {/*pokedexList.length > 0 && pokedexList.map((pokedex, index) => {*/}
+                        {pokedexList.map((pokedex, index) => {
                             return (<tr key={index}>
                                 {console.log(pokedex)}
                                 <td>{index+1}</td>

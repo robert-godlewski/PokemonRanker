@@ -1,7 +1,8 @@
 // JS Library
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {Link, useParams} from 'react-router-dom'
+import {useQuery} from 'react-query';
 
 // Components
 import NavBar from './NavBar';
@@ -11,29 +12,9 @@ const ViewPokemonList = (props) => {
     const {id} = useParams();
     const {pokemonList, setPokemonList} = props;
 
+    // Non cached version
+    /*
     useEffect(() => {
-        /*
-        Original to get all pokemon reguardless of pokedex
-        axios.get("https://pokeapi.co/api/v2/pokemon/?limit=898")
-        .then((res) => {
-            console.log(res);
-            console.log(res.data);
-            console.log(res.data.results);
-            setPokemonList(res.data.results);
-        })
-        .catch((err) => {console.log(err)});
-        */
-        // Gets the National Dex Only
-        /*
-        axios.get("https://pokeapi.co/api/v2/pokedex/1")
-        .then((res) => {
-            console.log(res);
-            console.log(res.data);
-            console.log(res.data.pokemon_entries);
-            setPokemonList(res.data.pokemon_entries);
-        })
-        .catch((err) => console.log(err));
-        */
         axios.get(`https://pokeapi.co/api/v2/pokedex/${id}`)
         .then((res) => {
             console.log(res);
@@ -43,6 +24,24 @@ const ViewPokemonList = (props) => {
         })
         .catch((err) => console.log(err));
     }, []);
+    */
+    
+    // Cached data
+    const [loading, setLoading] = useState(true);
+    const result = useQuery(`pokemonList${id}`, () => {
+        return axios.get(`https://pokeapi.co/api/v2/pokedex/${id}`)
+        .then((res) => {
+            console.log(res);
+            console.log(res.data);
+            console.log(res.data.pokemon_entries);
+            setPokemonList(res.data.pokemon_entries);
+            setLoading(false);
+        })
+        .catch((err) => console.log(err));
+    });
+    console.log(result)
+
+    if (loading) return <><h1>Loading..</h1></>;
 
     return (
         <div>
@@ -56,7 +55,8 @@ const ViewPokemonList = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {pokemonList.length > 0 && pokemonList.map((pokemon, index) => {
+                    {/*pokemonList.length > 0 && pokemonList.map((pokemon, index) => {*/}
+                    {pokemonList.map((pokemon, index) => {
                         return (<tr key={index}>
                             <td>{pokemon.entry_number}</td>
                             {/* Works only for national dex! */}
