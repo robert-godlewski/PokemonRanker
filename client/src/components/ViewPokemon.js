@@ -12,12 +12,13 @@ const ViewPokemon = (props) => {
     const {id} = useParams();
     const {pokemon, setPokemon} = props;
 
+    // Needed data variables, each one has an api call
     const [pokemonSpecies, setPokemonSpecies] = useState({});
-
-    // Pokemon Evolution Chain
+    const [evolutionNum, setEvolutionNum] = useState(0);
     const [evolutionChain, setEvolutionChain] = useState({});
 
     // Pokemon Stats
+    /*
     const [type1, setType1] = useState("");
     const [type2, setType2] = useState("");
     const [baseEx, setBaseEx] = useState("");
@@ -27,8 +28,9 @@ const ViewPokemon = (props) => {
     const [spAttack, setSpAttack] = useState([]);
     const [spDefense, setSpDefense] = useState([]);
     const [speed, setSpeed] = useState([]);
+    */
 
-    // For getting the evolution chain - Algorithm here is a linked list
+    /*
     const EvolutionChain = (link) => {
         // link = `https://pokeapi.co/api/v2/evolution-chain/${a_number_not_id}`
         //console.log(link);
@@ -147,8 +149,10 @@ const ViewPokemon = (props) => {
         })
         .catch((err) => console.log(err));
     };
+    */
 
     // For getting a lot of the pokemon stats
+    /*
     const PokemonStats = (link) => {
         // link = `https://pokeapi.co/api/v2/pokemon/${id}`
         //console.log(link);
@@ -185,6 +189,7 @@ const ViewPokemon = (props) => {
         })
         .catch((err) => console.log(err));
     };
+    */
 
     // For getting a pokemon information
     // Noncached
@@ -221,7 +226,7 @@ const ViewPokemon = (props) => {
     const results = useQuery(`pokemon-species-${id}`, () => {
         return axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
         .then((res) => {
-            console.log(res);
+            //console.log(res);
             // Base all calls off of this base data
             console.log("All of the data from pokemon-species:")
             console.log(res.data);
@@ -231,14 +236,18 @@ const ViewPokemon = (props) => {
             //console.log(res.data.capture_rate);
             //console.log("Color:");
             //console.log(res.data.color);
-            console.log("Egg Groups:");
-            console.log(res.data.egg_groups);
+            //console.log("Egg Groups:");
+            //console.log(res.data.egg_groups);
             // Really want this
-            //console.log("Evolution Chain:");
+            console.log("Evolution Chain:");
             //console.log(res.data.evolution_chain);
-            //console.log(res.data.evolution_chain.url);
+            console.log(res.data.evolution_chain.url);
+            let evolution_url = res.data.evolution_chain.url;
+            let arr_ev_ul = evolution_url.split("/");
+            console.log(arr_ev_ul);
+            console.log(arr_ev_ul[6]);
             //EvolutionChain(res.data.evolution_chain.url)
-
+            setEvolutionNum(arr_ev_ul[6]);
             // Might want this
             //console.log("Evolves from:");
             //console.log(res.data.evolves_from_species);
@@ -266,18 +275,18 @@ const ViewPokemon = (props) => {
             //console.log(res.data.habitat);
 
             // Will be usefull for gathering pokemon data
-            console.log("Gender Differences?");
-            console.log(res.data.has_gender_differences);
-            console.log("Hatch Counter:");
-            console.log(res.data.hatch_counter);
+            //console.log("Gender Differences?");
+            //console.log(res.data.has_gender_differences);
+            //console.log("Hatch Counter:");
+            //console.log(res.data.hatch_counter);
             //console.log("ID number of the Pokemon:");
             //console.log(res.data.id);
-            console.log("Is baby?");
-            console.log(res.data.is_baby);
-            console.log("Is a legendary Pokemon?");
-            console.log(res.data.is_legendary);
-            console.log("Is a mythical Pokemon?");
-            console.log(res.data.is_mythical);
+            //console.log("Is baby?");
+            //console.log(res.data.is_baby);
+            //console.log("Is a legendary Pokemon?");
+            //console.log(res.data.is_legendary);
+            //console.log("Is a mythical Pokemon?");
+            //console.log(res.data.is_mythical);
             // Really want this
             //console.log("Pokemon name:")
             //console.log(res.data.name);
@@ -287,10 +296,10 @@ const ViewPokemon = (props) => {
             console.log("Pal Park Encounters:");
             console.log(res.data.pal_park_encounters);
             // Really want this
-            console.log("Number in available pokedexes:");
-            console.log(res.data.pokedex_numbers);
-            console.log("Shape");
-            console.log(res.data.shape);
+            //console.log("Number in available pokedexes:");
+            //console.log(res.data.pokedex_numbers);
+            //console.log("Shape");
+            //console.log(res.data.shape);
             // To get the stats - need to see for all pokemon though
             console.log("Variations for this pokemon:");
             console.log(res.data.varieties);
@@ -301,9 +310,39 @@ const ViewPokemon = (props) => {
             setPokemonSpecies(res.data);
             setLoading(false);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+            console.log(err);
+            setLoading(true);
+        });
     });
+    console.log("Species Results:");
     console.log(results);
+
+    // For getting the evolution chain - Algorithm here is a linked list
+    const evolution_results = useQuery(`evolution-chain-${evolutionNum}`, () => {
+        return axios.get(`https://pokeapi.co/api/v2/evolution-chain/${evolutionNum}`)
+        .then((res) => {
+            console.log(res);
+            console.log("All of the data from evolution-chain:");
+            console.log(res.data);
+            console.log(res.data.chain);
+            // First Evolution
+            console.log("First Evolution:");
+            //console.log(res.data.chain.species);
+            console.log(res.data.chain.species.name);
+            // Second Evolution
+            console.log("Second Evolution:");
+            //
+            setEvolutionChain(res.data);
+            setLoading(false);
+        })
+        .catch((err) => {
+            console.log(err);
+            setLoading(true);
+        });
+    });
+    console.log("Evolution Results:");
+    console.log(evolution_results);
 
     if (loading) return <><h1>Loading..</h1></>;
 
@@ -312,37 +351,171 @@ const ViewPokemon = (props) => {
         <>
             <NavBar/>
             <div>
-                {console.log(id)}
+                {/*console.log(id)}
                 {console.log(typeof(id))}
                 {console.log(pokemonSpecies)}
-                {/*console.log(pokemon)*/}
-                <h3>{pokemonSpecies.name} - {id}</h3>
+                {console.log(pokemonSpecies.id)*/}
+                <h3>{pokemonSpecies.name}</h3>
                 <div className='container row'>
-                    <div className='col-6 border'>
-                        <h6>Details:</h6>
-                        <p>Base Happiness = {pokemonSpecies.base_happiness}</p>
-                        <p>Capture Rate = {pokemonSpecies.capture_rate}</p>
-                        <p>Color = {pokemonSpecies.color.name} - {pokemonSpecies.color.url}</p>
-                        {console.log(pokemonSpecies.egg_groups)}
-                        <p>Evolution Chain url = {pokemonSpecies.evolution_chain.url}</p>
-                        {pokemonSpecies.evolves_from_species ? <p>Evolves from {pokemonSpecies.evolves_from_species}</p> : null}
-                        {console.log(pokemonSpecies.flavor_text_entries)}
-                        {console.log(pokemonSpecies.form_descriptions)}
-                        {console.log(pokemonSpecies.forms_switchable)}
-                        <p>Gender Rate = {pokemonSpecies.gender_rate}</p>
-                        {console.log(pokemonSpecies.genera)}
-                        <p>Generation introduced = {pokemonSpecies.generation.name} - {pokemonSpecies.generation.url}</p>
-                        <p>Growth Rate = {pokemonSpecies.growth_rate.name} - {pokemonSpecies.growth_rate.url}</p>
-                        <p>Habitat = {pokemonSpecies.habitat.name} - {pokemonSpecies.habitat.url}</p>
+                    <div className='border col-6'>
+                        <h5>Basic Details</h5>
+                        {pokemonSpecies.has_gender_differences ? <p>There is a gender difference in appearace.</p> : <p>There is no gender difference in appearance.</p>}
+                        {pokemonSpecies.is_baby ? <p>This pokemon is a baby species</p> : null}
+                        {pokemonSpecies.is_legendary ? <p>This is a legendary pokemon</p> : null}
+                        {pokemonSpecies.is_mythical ? <p>This is a mythical pokemon</p> : null}
+                        {!pokemonSpecies.is_baby && !pokemonSpecies.is_legendary && !pokemonSpecies.is_mythical ? <p>No special indicators for this pokemon</p> : null}
+                        {pokemonSpecies.gender_rate > 0 ? <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th>Gender</th>
+                                    <th>Percentage</th>
+                                    <th>Ratio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Female</td>
+                                    <td>{(parseInt(pokemonSpecies.gender_rate)/8)*100}%</td>
+                                    <td>{pokemonSpecies.gender_rate}/8</td>
+                                </tr>
+                                <tr>
+                                    <td>Male</td>
+                                    <td>{100-((parseInt(pokemonSpecies.gender_rate)/8)*100)}%</td>
+                                    <td>{8-(parseInt(pokemonSpecies.gender_rate))}/8</td>
+                                </tr>
+                            </tbody>
+                        </table> : <p>This is a generless pokemon.</p>}
+                        <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Value</th>
+                                    {/*<th>URL</th>*/}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Pokemon Generation Introduction</th>
+                                    <td>{pokemonSpecies.generation.name}</td>
+                                    {/*<td>{pokemonSpecies.generation.url}</td>*/}
+                                </tr>
+                                <tr>
+                                    <th>Habitat</th>
+                                    <td>{pokemonSpecies.habitat.name}</td>
+                                    {/*<td>{pokemonSpecies.habitat.url}</td>*/}
+                                </tr>
+                                <tr>
+                                    <th>Pokemon Color</th>
+                                    <td>{pokemonSpecies.color.name}</td>
+                                    {/*<td>{pokemonSpecies.color.url}</td>*/}
+                                </tr>
+                                <tr>
+                                    <th>Shape</th>
+                                    <td>{pokemonSpecies.shape.name}</td>
+                                    {/*<td>{pokemonSpecies.shape.url}</td>*/}
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div className='col-6 border'>
-                        <p>Put Sprites here....</p>
+                    <div className='border col-6'>
+                        <p>Sprites go here....</p>
+                    </div>
+                    <div className='border'>
+                        <h5>Raising</h5>
+                        <h6>Pokedex listings</h6>
+                        <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th>Pokedex</th>
+                                    <th>Number</th>
+                                    {/*<th>URL</th>*/}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pokemonSpecies.pokedex_numbers.map((dex, index) => {
+                                    return (<tr key={index}>
+                                        {/* Change the name to the url and hide the url from the table */}
+                                        <td>{dex.pokedex.name}</td>
+                                        <td>{dex.entry_number}</td>
+                                        {/*<td>{dex.pokedex.url}</td>*/}
+                                    </tr>)
+                                })}
+                            </tbody>
+                        </table>
+                        <h6>Other details</h6>
+                        <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Catch Rate</th>
+                                    <td>{pokemonSpecies.capture_rate}/255 = {(parseInt(pokemonSpecies.capture_rate)/255)*100}%</td>
+                                </tr>
+                                <tr>
+                                    <th>Base Happiness</th>
+                                    <td>{pokemonSpecies.base_happiness}/255 = {(parseInt(pokemonSpecies.base_happiness)/255)*100}%</td>
+                                </tr>
+                                <tr>
+                                    <th>Growth Rate</th>
+                                    <td>{pokemonSpecies.growth_rate.name} = {pokemonSpecies.growth_rate.url}</td>
+                                </tr>
+                                <tr>
+                                    <th>Evolution Chain?</th>
+                                    {/*<td>{pokemonSpecies.evolution_chain ? <span>Yes</span> : <p>No</p>}</td>*/}
+                                    <td>{pokemonSpecies.evolution_chain.url ? pokemonSpecies.evolution_chain.url : <span>None</span>}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className='border'>
+                        <h5>Breeding</h5>
+                        <h6>Egg and Hatching</h6>
+                        <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th>Egg Group</th>
+                                    <th>URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pokemonSpecies.egg_groups.map((group, index) => {
+                                    return (<tr key={index}>
+                                        <td>{group.name}</td>
+                                        <td>{group.url}</td>
+                                    </tr>)
+                                })}
+                            </tbody>
+                        </table>
+                        <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Hatch Counter</th>
+                                    <td>{pokemonSpecies.hatch_counter}</td>
+                                </tr>
+                                <tr>
+                                    <th>Number of Steps</th>
+                                    <td>{(parseInt(pokemonSpecies.hatch_counter)+1)*255}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                {/* Sprites - Kind of Buggy here */}
+                {/**}
+                <h3>Old below</h3>
+                {console.log("edit everything below here.......")}
+                {/* Sprites - Kind of Buggy here *}
                 {console.log("Pokemon Sprites")}
                 {console.log(pokemon.sprites)}
-                {/**}
                 <div className='container row'>
                     <div className='col-6'>
                         {pokemon.sprites && pokemon.sprites.front_female ? <h5>Male Version</h5> : <h5>Default Version</h5>}
@@ -371,8 +544,8 @@ const ViewPokemon = (props) => {
                         <img src={pokemon.sprites.back_shiny_female} alt='female pokemon back'/>
                     </div> : null}
                 </div>
-                {**/}
-                {/* Measurements */}
+                {**}
+                {/* Measurements *}
                 <table className='container table table-striped'>
                     <thead>
                         <tr>
@@ -394,12 +567,12 @@ const ViewPokemon = (props) => {
                         </tr>
                     </tbody>
                 </table>
-                {/* Types - change into links */}
+                {/* Types - change into links *}
                 <h5>Types:</h5>
                 <p>
                     <span>{type1}</span> <span>{type2 ? <>and {type2}</> : null}</span>
                 </p>
-                {/* Pokemon base stats and experience */}
+                {/* Pokemon base stats and experience *}
                 <h5>Stats:</h5>
                 <table className='container table table-striped'>
                     <thead>
@@ -455,12 +628,12 @@ const ViewPokemon = (props) => {
                     {defense === spDefense ? <span>
                         Both defense and special defense are the same for a {pokemon.name}.
                     </span> : null}
-                </p>*/}
+                </p>*}
             </div>
-            {/* Abilities */}
+            {/* Abilities *}
             {console.log("Abilities:")}
             {console.log(pokemon.abilities)}
-            {/* Moves */}
+            {/* Moves *}
             {console.log("Moves:")}
             {console.log(pokemon.moves)}
             {/* Evolution chain */}
@@ -536,14 +709,15 @@ const ViewPokemon = (props) => {
                     })}
                 </div> : null}
             </div> : <div><p>{pokemon.name} has no evolutions.</p></div>}*/}
-            {/* Details about which games this pokemon is in */}
+            {/* Details about which games this pokemon is in *}
             {console.log("Game Indices:")}
             {console.log(pokemon.game_indices)}
-            {/* Moving through National dex order */}
+            {/* Moving through National dex order *}
             <div>
                 <h3>In National Pokedex Order</h3>
                 {parseInt(pokemon.id)-1 > 0 ? <span><Link to={`/pokemon/${parseInt(pokemon.id)-1}`}>previous</Link> | </span> : null}
                 <Link to={`/pokemon/${parseInt(pokemon.id)+1}`}>next</Link>
+            {**/}
             </div>
         </>
     );

@@ -9,80 +9,8 @@ So far the only thing that this app does is access the api to gather the informa
 
 # Sources
 * Documentation for Pokeapi: https://pokeapi.co/docs/v2
-* api testing grounds: https://pokeapi.co/
+* api testing grounds: https://pokeapi.co/api/v2/.....
 * from a previous project I did for Coding Dojo: https://github.com/robert-godlewski/pokemon_api.git
-
-# API Notes
-For all pokedexes do https://pokeapi.co/api/v2/pokedex/?limit=30, the results are stored in res.data.results is an array of objects.  Within each indexed object:
-{
-    "name": ...str name of the pokedex...,
-    "url": "https//pokeapi.co/api/v2/pokedex/...id number of pokedex..."
-}
-
-For each pokedex call use the id number of the pokedex and do https://pokeapi.co/api/v2/pokedex/id, the results are stored in res.data.results:
-{
-    "descriptions": [...],
-    "id": ...an int of the pokedex...,
-    "is_main_series": true/ false,
-    "name": ...str name of the pokedex...,
-    "names": [...a list of names of the pokedex in different languages...],
-    "pokemon_entries": [
-        {
-            "entry_number": ...int related to the pokemon...,
-            "pokemon_species": {
-                "name": ...str name of the pokemon...,
-                "url": "https://pokeapi.co/api/v2/pokemon-species/{'pokemon id number'}/"
-            }
-        },
-        ...multiple indexes of objects that repeat before...,
-    ],
-    "region": null or {
-        "name": ...str name of the region...,
-        "url": "https://pokeapi.co/api/v2/region/{id number for the region}/"
-    },
-    "version_groups": null or [
-        {
-            "name": ...str name of the game version...,
-            "url": "https://pokeapi.co/api/v2/version-group/{id of the version group}/"
-        },
-        ...nultiple indexes of objects that repeat before...
-    ]
-}
-
-For each pokemon-species call use the pokemon id number from the national pokedex (or the name of the pokemon) and do https://pokeapi.co/api/v2/pokemon-species/{id or name}, the res.data.results are: {
-    ...,
-    "evolution_chain": {"url": "https://pokeapi.co/api/v2/evolution-chain/{id of evolution chain}/"},
-    "evolves_from_species": null or {
-        "name": ...str name of the pokemon prior to this one...,
-        "url": "https://pokeapi.co/api/v2/pokemon-species/{'pokemon id number of prior evolution'}/"
-    },
-    ...,
-    "generation": {
-        "name": "generation-{roman numeral in lowercase here}",
-        "url": "https://pokeapi.co/api/v2/generation/{generation number same as roman numeral}/"
-    },
-    ...,
-    "id": ...int id of the pokemon...,
-    ...,
-    "name": ...str name of the pokemon...,
-    ...,
-    "pokedex_numbers": [
-        {
-            "entry_number": ...int id number in the specified pokedex...,
-            "pokedex": {
-                "name": ...str name of the pokedex...,
-                "url": "https://pokeapi.co/api/v2/pokedex/{pokedex id number}/"
-            }
-        },
-        ...,
-    ],
-    ...,
-    "varieties":
-}
-
-For each region call use the id number for the region (or the name of the region) and do https://pokeapi.co/api/v2/region/{id or region name}, the res.data.results are: {...}
-
-For each version group call use the version-group id number and do https://pokeapi.co/api/v2/version-group/id, the res.data.results are: {...}
 
 # Todos
 1. Implement a cache
