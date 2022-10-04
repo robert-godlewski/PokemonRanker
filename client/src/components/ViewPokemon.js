@@ -14,8 +14,20 @@ const ViewPokemon = (props) => {
 
     // Needed data variables, each one has an api call
     const [pokemonSpecies, setPokemonSpecies] = useState({});
-    const [evolutionNum, setEvolutionNum] = useState(0);
+    const [evolutionNum, setEvolutionNum] = useState("0");
     const [evolutionChain, setEvolutionChain] = useState({});
+    const [evolutionNums, setEvolutionNums] = useState([]);
+
+    // Function for grabbing the index of the evolution chain
+    // url is a str
+    // returns a str
+    const EVC_id = (url) => {
+        console.log(url);
+        let arr_url = url.split("/");
+        console.log(arr_url);
+        console.log(arr_url[6]);
+        return arr_url[6];
+    };
 
     // Pokemon Stats
     /*
@@ -28,127 +40,6 @@ const ViewPokemon = (props) => {
     const [spAttack, setSpAttack] = useState([]);
     const [spDefense, setSpDefense] = useState([]);
     const [speed, setSpeed] = useState([]);
-    */
-
-    /*
-    const EvolutionChain = (link) => {
-        // link = `https://pokeapi.co/api/v2/evolution-chain/${a_number_not_id}`
-        //console.log(link);
-        axios.get(link).then((res) => {
-            //console.log(res);
-            //console.log(res.data);
-            //console.log(res.data.chain);
-            // First pokemon in the list
-            if (!res.data.chain.evolves_to) {
-                // Means that this pokemon doesn't evolve to or from any other pokemon.
-                setEvolutionChain({});
-            } else {
-                // Will need to edit this function for pokemon that evolve differently
-                var CreateList = (arr) => {
-                    //console.log('In function:');
-                    //console.log(arr);
-                    var new_arr = [];
-                    for (var i = 0; i < arr.length; i++) {
-                        //console.log(res.data.chain.evolves_to[0].evolution_details);
-                        //console.log(res.data.chain.evolves_to[0].evolution_details[0]);
-                        //console.log(res.data.chain.evolves_to[0].evolution_details[0].trigger);
-                        var evol_trig = arr[i].evolution_details[0].trigger.name;
-                        // Solve bugs here
-                        // How the pokemon evolves
-                        var trigger_type;
-                        // Level to set the trigger to evolve
-                        var trig_val;
-                        // Time of day needed to evolve
-                        var td = null;
-                        if (evol_trig === "level-up") {
-                            if (arr[i].evolution_details[0].min_level) {
-                                trigger_type = "level-up";
-                                trig_val = arr[i].evolution_details[0].min_level;
-                            } else if (arr[i].evolution_details[0].min_happiness) {
-                                trigger_type = "happiness";
-                                trig_val = arr[i].evolution_details[0].min_happiness;
-                            }
-                            if (arr[i].evolution_details[0].time_of_day) {
-                                td = arr[i].evolution_details[0].time_of_day;
-                            }
-                        } else if (evol_trig === "use-item") {
-                            trigger_type = "item";
-                            trig_val = arr[i].evolution_details[0].item.name;
-                        } else if (evol_trig === "trade") {
-                            trigger_type = "trade"
-                            if (arr[i].evolution_details[0].held_item) {
-                                trig_val = arr[i].evolution_details[0].held_item.name;
-                            } else {
-                                trig_val = "";
-                            }
-                        }
-                        var species = {
-                            "name": arr[i].species.name,
-                            "pokeid": arr[i].species.url.split("/")[6],
-                            "evolution_trigger": evol_trig,
-                            "trigger_type": trigger_type,
-                            "trig_val": trig_val,
-                            "time_of_day": td
-                        }
-                        //console.log(species["name"]);
-                        //console.log(species["pokeid"]);
-                        //console.log(species["evolution_trigger"]);
-                        //console.log(species["trigger_type"]);
-                        //console.log(species["trig_val"]);
-                        //console.log(species["time_of_day"]);
-                        new_arr.push(species);
-                    }
-                    return new_arr;
-                }
-                //setEvolutionChain(res.data.chain);
-                // First evolution
-                //console.log('First Evolution:');
-                //console.log(res.data.chain.species);
-                //console.log(res.data.chain.species.name);
-                //console.log(res.data.chain.species.url);
-                //console.log(res.data.chain.species.url.split("/"));
-                //console.log(res.data.chain.species.url.split("/")[6]);
-                var base_species = {
-                    "name": res.data.chain.species.name,
-                    "pokeid": res.data.chain.species.url.split("/")[6]
-                }
-                //console.log(base_species["name"]);
-                //console.log(base_species["pokeid"]);
-                //console.log(res.data.chain.evolves_to);
-                // Second Evolutions
-                //console.log('Second Evolution(s):');
-                var group2;
-                if (res.data.chain.evolves_to.length >= 1) {
-                    //console.log(res.data.chain.evolves_to[0].species);
-                    //console.log(res.data.chain.evolves_to[0].species.name);
-                    group2 = CreateList(res.data.chain.evolves_to);
-                    //console.log(group2);
-                    //console.log(res.data.chain.evolves_to[0].evolves_to);
-                    //console.log(res.data.chain.evolves_to[0].evolves_to[0]);
-                } else {
-                    group2 = [];
-                }
-                // Third Evolutions
-                //console.log('Third Evolution(s):');
-                // Uncertain if there are others on other chains
-                var group3;
-                if (res.data.chain.evolves_to[0].evolves_to.length >= 1) {
-                    //console.log(res.data.chain.evolves_to[0].evolves_to[0].species);
-                    //console.log(res.data.chain.evolves_to[0].evolves_to[0].species.name);
-                    group3 = CreateList(res.data.chain.evolves_to[0].evolves_to);
-                    //console.log(group3);
-                } else {
-                    group3 = [];
-                }
-                setEvolutionChain({
-                    "group1": base_species, 
-                    "group2": group2, 
-                    "group3": group3
-                });
-            }
-        })
-        .catch((err) => console.log(err));
-    };
     */
 
     // For getting a lot of the pokemon stats
@@ -223,6 +114,8 @@ const ViewPokemon = (props) => {
 
     // Caching the data from the initial call
     const [loading, setLoading] = useState(true);
+
+    // Initial api request
     const results = useQuery(`pokemon-species-${id}`, () => {
         return axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
         .then((res) => {
@@ -230,76 +123,18 @@ const ViewPokemon = (props) => {
             // Base all calls off of this base data
             console.log("All of the data from pokemon-species:")
             console.log(res.data);
-            //console.log("Base Happiness:");
-            //console.log(res.data.base_happiness);
-            //console.log("Capture Rate:");
-            //console.log(res.data.capture_rate);
-            //console.log("Color:");
-            //console.log(res.data.color);
-            //console.log("Egg Groups:");
-            //console.log(res.data.egg_groups);
-            // Really want this
-            console.log("Evolution Chain:");
-            //console.log(res.data.evolution_chain);
-            console.log(res.data.evolution_chain.url);
-            let evolution_url = res.data.evolution_chain.url;
-            let arr_ev_ul = evolution_url.split("/");
-            console.log(arr_ev_ul);
-            console.log(arr_ev_ul[6]);
-            //EvolutionChain(res.data.evolution_chain.url)
-            setEvolutionNum(arr_ev_ul[6]);
-            // Might want this
-            //console.log("Evolves from:");
-            //console.log(res.data.evolves_from_species);
-
+            // Data that will add in later
+            console.log("Data Not posted yet.");
             console.log("Flavors:");
             console.log(res.data.flavor_text_entries);
             console.log("Form Descriptions:");
             console.log(res.data.form_descriptions);
             console.log("Are the Forms Switchable?");
             console.log(res.data.forms_switchable);
-            //console.log("Gender Rate:");
-            //console.log(res.data.gender_rate);
             console.log("Genera:");
             console.log(res.data.genera);
-            // Really want this
-            //console.log("Generation:");
-            //console.log(res.data.generation);
-
-            // Might want this
-            //console.log("Growth Rate:");
-            //console.log(res.data.growth_rate);
-
-            // Might want this
-            //console.log("Habitat:");
-            //console.log(res.data.habitat);
-
-            // Will be usefull for gathering pokemon data
-            //console.log("Gender Differences?");
-            //console.log(res.data.has_gender_differences);
-            //console.log("Hatch Counter:");
-            //console.log(res.data.hatch_counter);
-            //console.log("ID number of the Pokemon:");
-            //console.log(res.data.id);
-            //console.log("Is baby?");
-            //console.log(res.data.is_baby);
-            //console.log("Is a legendary Pokemon?");
-            //console.log(res.data.is_legendary);
-            //console.log("Is a mythical Pokemon?");
-            //console.log(res.data.is_mythical);
-            // Really want this
-            //console.log("Pokemon name:")
-            //console.log(res.data.name);
-            //console.log(res.data.names);
-            //console.log("Order number:");
-            //console.log(res.data.order);
             console.log("Pal Park Encounters:");
             console.log(res.data.pal_park_encounters);
-            // Really want this
-            //console.log("Number in available pokedexes:");
-            //console.log(res.data.pokedex_numbers);
-            //console.log("Shape");
-            //console.log(res.data.shape);
             // To get the stats - need to see for all pokemon though
             console.log("Variations for this pokemon:");
             console.log(res.data.varieties);
@@ -307,8 +142,19 @@ const ViewPokemon = (props) => {
             //console.log(res.data.varieties[0].pokemon);
             //console.log(res.data.varieties[0].pokemon.url);
             //PokemonStats(res.data.varieties[0].pokemon.url);
+
+            // Saving current api request
             setPokemonSpecies(res.data);
             setLoading(false);
+
+            // Grabbing the Evolution Chain number as a str
+            console.log("Evolution Chain:");
+            //console.log(res.data.evolution_chain);
+            console.log(res.data.evolution_chain.url);
+            let evc_id = EVC_id(res.data.evolution_chain.url);
+            console.log(evc_id);
+            setEvolutionNum(evc_id);
+            console.log("------------------");
         })
         .catch((err) => {
             console.log(err);
@@ -318,23 +164,48 @@ const ViewPokemon = (props) => {
     console.log("Species Results:");
     console.log(results);
 
-    // For getting the evolution chain - Algorithm here is a linked list
+    // For getting the evolution chain and keeping it in the cache
     const evolution_results = useQuery(`evolution-chain-${evolutionNum}`, () => {
+        if (evolutionNum == "0") {
+            console.log("Default page details will not work here.");
+            setLoading(true);
+        }
+        console.log(`Evolution chain number = ${evolutionNum}`);
         return axios.get(`https://pokeapi.co/api/v2/evolution-chain/${evolutionNum}`)
         .then((res) => {
-            console.log(res);
+            //console.log(res);
             console.log("All of the data from evolution-chain:");
             console.log(res.data);
             console.log(res.data.chain);
             // First Evolution
+            /*
             console.log("First Evolution:");
             //console.log(res.data.chain.species);
             console.log(res.data.chain.species.name);
+            console.log(res.data.chain.species.url);
+            let evol1_url = res.data.chain.species.url;
+            let arr_evol1_url = evol1_url.split("/");
+            console.log(arr_evol1_url[6]);
+            */
             // Second Evolution
+            /*
             console.log("Second Evolution:");
-            //
-            setEvolutionChain(res.data);
+            console.log(res.data.chain.evolves_to);
+            let arr_evol2 = res.data.chain.evolves_to;
+            let arr_evol2_indexes = [];
+            for (let i = 0; i < arr_evol2.length-1; i++) {
+                let ev_url_id_2 = EVC_id(arr_evol2[i]);
+                arr_evol2_indexes.push(ev_url_id_2);
+            }
+            console.log(arr_evol2_indexes);
+            */
+            // Third Evolution - Bugs possibly
+            //console.log("Third Evolution:");
+
+            // Saving the data
+            setEvolutionChain(res.data.chain);
             setLoading(false);
+            console.log("------------------------");
         })
         .catch((err) => {
             console.log(err);
@@ -357,6 +228,7 @@ const ViewPokemon = (props) => {
                 {console.log(pokemonSpecies.id)*/}
                 <h3>{pokemonSpecies.name}</h3>
                 <div className='container row'>
+                    {/* A group of random details */}
                     <div className='border col-6'>
                         <h5>Basic Details</h5>
                         {pokemonSpecies.has_gender_differences ? <p>There is a gender difference in appearace.</p> : <p>There is no gender difference in appearance.</p>}
@@ -364,6 +236,7 @@ const ViewPokemon = (props) => {
                         {pokemonSpecies.is_legendary ? <p>This is a legendary pokemon</p> : null}
                         {pokemonSpecies.is_mythical ? <p>This is a mythical pokemon</p> : null}
                         {!pokemonSpecies.is_baby && !pokemonSpecies.is_legendary && !pokemonSpecies.is_mythical ? <p>No special indicators for this pokemon</p> : null}
+                        {pokemonSpecies.evolves_from_species ? <p>This pokemon evolves from <Link to={`/pokemon/${pokemonSpecies.evolves_from_species.name}`}>{pokemonSpecies.evolves_from_species.name}</Link></p> : null}
                         {pokemonSpecies.gender_rate > 0 ? <table className='container table table-striped border'>
                             <thead>
                                 <tr>
@@ -417,9 +290,11 @@ const ViewPokemon = (props) => {
                             </tbody>
                         </table>
                     </div>
+                    {/* Sprites here */}
                     <div className='border col-6'>
                         <p>Sprites go here....</p>
                     </div>
+                    {/* Raising and Evolving pokemon */}
                     <div className='border'>
                         <h5>Raising</h5>
                         <h6>Pokedex listings</h6>
@@ -465,11 +340,64 @@ const ViewPokemon = (props) => {
                                 </tr>
                                 <tr>
                                     <th>Evolution Chain?</th>
-                                    {/*<td>{pokemonSpecies.evolution_chain ? <span>Yes</span> : <p>No</p>}</td>*/}
-                                    <td>{pokemonSpecies.evolution_chain.url ? pokemonSpecies.evolution_chain.url : <span>None</span>}</td>
+                                    <td>{pokemonSpecies.evolution_chain ? <span>Yes</span> : <p>No</p>}</td>
+                                    {/*<td>{pokemonSpecies.evolution_chain.url ? pokemonSpecies.evolution_chain.url : <span>None</span>}</td>*/}
                                 </tr>
                             </tbody>
                         </table>
+                        <h6>Pokemon Evolution Tree</h6>
+                        {pokemonSpecies.evolves_from_species && pokemonSpecies.evolution_chain ? <p>A {pokemonSpecies.name} evolves from {pokemonSpecies.evolves_from_species.name} - {pokemonSpecies.evolves_from_species.url}</p> : <p>A {pokemonSpecies.name} is the first species in the evolution chain.</p>}
+                        {pokemonSpecies.evolution_chain ? <table className='container table table-striped border'>
+                            <thead>
+                                <tr>
+                                    <th>Grouping</th>
+                                    <th>Name</th>
+                                    {/*<th>URL</th>*/}
+                                    <th>Evolution Trigger</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/*console.log("Pokemon evolution chain")}
+                                {console.log(evolutionChain)*/}
+                                <tr>
+                                    <td>1st</td>
+                                    <td>
+                                        <Link to={`/pokemon/${evolutionChain.species.name}`}>{evolutionChain.species.name}</Link>
+                                    </td>
+                                    {/*<td>{evolutionChain.chain.species.name}</td>
+                                    <td>{evolutionChain.chain.species.url}</td>*/}
+                                    <td>--</td>
+                                    <td>This pokemon evolves to the rest in the list.</td>
+                                </tr>
+                                {/* 2nd Evolutions - possibly some bugs here */}
+                                {evolutionChain.evolves_to.map((pokemon, index) => {
+                                    return (<tr key={index}>
+                                        <td>2nd</td>
+                                        <td>
+                                            <Link to={`/pokemon/${pokemon.species.name}`}>{pokemon.species.name}</Link>
+                                        </td>
+                                        {/*<td>{pokemon.species.name}</td>
+                                        <td>{pokemon.species.url}</td>*/}
+                                        <td>{pokemon.evolution_details[0].trigger.name}</td>
+                                        <td>Needs {pokemon.evolution_details[0].min_level ? <span>to be at level {pokemon.evolution_details[0].min_level} to evolve into {pokemon.species.name}</span> : null}.</td>
+                                    </tr>)
+                                })}
+                                {/* 3rd Evolution - possibly lots of bugs here */}
+                                {evolutionChain.evolves_to[0].evolves_to.map((pokemon, index) => {
+                                    return (<tr key={index}>
+                                        <td>3rd</td>
+                                        <td>
+                                            <Link to={`/pokemon/${pokemon.species.name}`}>{pokemon.species.name}</Link>
+                                        </td>
+                                        {/*<td>{pokemon.species.name}</td>
+                                        <td>{pokemon.species.url}</td>*/}
+                                        <td>{pokemon.evolution_details[0].trigger.name}</td>
+                                        <td>Needs {pokemon.evolution_details[0].min_level ? <span>to be at level {pokemon.evolution_details[0].min_level} to evolve into {pokemon.species.name}</span> : null}.</td>
+                                    </tr>)
+                                })}
+                            </tbody>
+                        </table> : <p>There is no evolution table for {pokemonSpecies.name}.</p>}
                     </div>
                     <div className='border'>
                         <h5>Breeding</h5>
@@ -636,79 +564,6 @@ const ViewPokemon = (props) => {
             {/* Moves *}
             {console.log("Moves:")}
             {console.log(pokemon.moves)}
-            {/* Evolution chain */}
-            {/*evolutionChain["group1"] ? <div>
-                <h3>Evolution Chain</h3>
-                {console.log('Evolution Chain:')}
-                {console.log(evolutionChain)}
-                <div>
-                    <h4>Base evolution</h4>
-                    {console.log(evolutionChain["group1"])}
-                    <Link to={`/pokemon/${parseInt(evolutionChain["group1"]["pokeid"])}`}>
-                        {evolutionChain["group1"]["name"]}
-                    </Link>
-                </div>
-                <div>
-                    <h4>Evolutions of {evolutionChain["group1"]["name"]}</h4>
-                    {console.log(evolutionChain["group2"])}
-                    {evolutionChain["group2"].map((pk, index) => {
-                        return (
-                            <div key={index}>
-                                <Link to={`/pokemon/${parseInt(pk["pokeid"])}`}>
-                                    {pk["name"]}
-                                </Link>
-                                <p>
-                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "level-up" ? <span>
-                                        Evolves into {pk["name"]} at level {pk["trig_val"]}.
-                                    </span> : null}
-                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "happiness" ? <span>
-                                        Evolves into {pk["name"]} with happiness level at {pk["trig_val"]}<span>{pk["time_of_day"] === "day" ? <> in the daytime</> : null}{pk["time_of_day"] === "night" ? <> in the night time</> : null}</span>.
-                                    </span> : null}
-                                    {pk["evolution_trigger"] === "use-item" ? <span>
-                                        Evolves into {pk["name"]} when you give it a {pk["trig_val"]}.
-                                    </span>: null}
-                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] === "" ? <span>
-                                        Evolves into {pk["name"]} when you trade it.
-                                    </span> : null}
-                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] !== "" ? <span>
-                                        Evolves into {pk["name"]} when you trade it with a {pk["trig_val"]}.
-                                    </span> : null}
-                                </p>
-                            </div>
-                        )
-                    })}
-                </div>
-                {evolutionChain["group3"].length >= 1 ? <div>
-                    <h4>Last Evolution Group</h4>
-                    {console.log(evolutionChain["group3"])}
-                    {evolutionChain["group3"].map((pk, index) => {
-                        return (
-                            <div key={index}>
-                                <Link to={`/pokemon/${parseInt(pk["pokeid"])}`}>
-                                    {pk["name"]}
-                                </Link>
-                                <p>
-                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "level-up" ? <span>
-                                        Evolves into {pk["name"]} at level {pk["trig_val"]}.
-                                    </span> : null}
-                                    {pk["evolution_trigger"] === "level-up" && pk["trigger_type"] === "happiness" ? <span>
-                                        Evolves into {pk["name"]} with happiness level at {pk["trig_val"]}.
-                                    </span> : null}
-                                    {pk["evolution_trigger"] === "use-item" ? <span>
-                                        Evolves into {pk["name"]} when you give it a {pk["trig_val"]}.
-                                    </span>: null}
-                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] === "" ? <span>
-                                        Evolves into {pk["name"]} when you trade it.
-                                    </span> : null}
-                                    {pk["evolution_trigger"] === "trade" && pk["trig_val"] !== "" ? <span>
-                                        Evolves into {pk["name"]} when you trade it with a {pk["trig_val"]}.
-                                    </span> : null}
-                                </p>
-                            </div>
-                        )
-                    })}
-                </div> : null}
-            </div> : <div><p>{pokemon.name} has no evolutions.</p></div>}*/}
             {/* Details about which games this pokemon is in *}
             {console.log("Game Indices:")}
             {console.log(pokemon.game_indices)}

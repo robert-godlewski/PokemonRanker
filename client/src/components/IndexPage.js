@@ -61,7 +61,7 @@ const IndexPage = (props) => {
                                 {console.log(pokedex)}
                                 <td>{index+1}</td>
                                 <td>
-                                    <Link to={`/pokedex/${index+1}`}>{pokedex.name}</Link>
+                                    <Link to={`/pokedex/${pokedex.name}`}>{pokedex.name}</Link>
                                 </td>
                                 <td>{pokedex.url}</td>
                             </tr>)

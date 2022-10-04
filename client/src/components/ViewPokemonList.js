@@ -61,7 +61,7 @@ const ViewPokemonList = (props) => {
                             <td>{pokemon.entry_number}</td>
                             {/* Works only for national dex! */}
                             <td>
-                                <Link to={`/pokemon/${pokemon.entry_number}`}>
+                                <Link to={`/pokemon/${pokemon.pokemon_species.name}`}>
                                     {pokemon.pokemon_species.name}
                                 </Link>
                             </td>
