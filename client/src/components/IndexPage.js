@@ -1,5 +1,5 @@
 // JS Library
-import React, {useEffect, useState} from 'react';
+import React, {/*useEffect,*/ useState} from 'react';
 import axios from 'axios';
 import {Link} from 'react-router-dom'
 import {useQuery} from 'react-query';
@@ -22,13 +22,15 @@ const IndexPage = (props) => {
     }, []);
     */
 
+    console.log("Loading IndexPage.js")
     // Cached data
     const [loading, setLoading] = useState(true);
     const result = useQuery("pokedexList", () => {
         return axios.get("https://pokeapi.co/api/v2/pokedex/?limit=30")
         .then((res) => {
-            console.log(res);
-            console.log(res.data);
+            //console.log(res);
+            //console.log(res.data);
+            console.log("Pokedex List:")
             console.log(res.data.results);
             setPokedexList(res.data.results);
             setLoading(false);

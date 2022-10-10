@@ -23,6 +23,8 @@ So far the only thing that this app does is access the api to gather the informa
 
 # Bugs to fix
 List of bugs that I have to fix in View Pokemon:
+* The initial api call when making a call to the evolution_chain api in ViewPokemon.js - Might be solved?
+* The variations with the initial call in ViewPokemon.js needs to be able to choose instead of just the first one.
 * The pokemon index numbers when you choose a different pokedex (only National Dex works!)
 * Sprites crashing the webpage sometimes; especially if you reload the app
 * Account for the species difference in each region - 

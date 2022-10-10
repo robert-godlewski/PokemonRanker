@@ -18,6 +18,7 @@ function App() {
 
   const [pokedexList, setPokedexList] = useState([]);
   const [pokemonList, setPokemonList] = useState([]);
+  // Not too sure if I really need this variable
   const [pokemon, setPokemon] = useState([]);
 
   return (
