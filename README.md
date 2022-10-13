@@ -1,6 +1,7 @@
 # Description
-This is a MERN application uses the pokeapi to rank pokemon based off of several conditions.
-* Uses pokemon api to gather the information needed and stores temporary data in a cache.
+This is a React application that temporarily caches the pokeapi for data needed to rank pokemon based off of several conditions.
+
+For later implementation
 * Ranks what traits and stats are the best for each Pokemon Species; Health Points, Attack, Defense, Speed, Special Defense, Special Attack, EVs, IVs, Nature.
 * Rankings against other Pokemon in battles based off of type(s), moves, defence.
 * Uses conditional based off of user prefernces and limits per game (to help narrow down the searching options).
@@ -13,8 +14,8 @@ So far the only thing that this app does is access the api to gather the informa
 * from a previous project I did for Coding Dojo: https://github.com/robert-godlewski/pokemon_api.git
 
 # Todos
-1. Implement a cache
-2. fix the bugs - Ongoing
+1. Render the all data pertaining to each pokemon to ViewPokemon.js
+2. Fix the bugs - Ongoing
 3. create a view of the different types (with links) and provides a list of pokemon
 4. figure out a way to implement a way to determine which stats should be optimized for each pokemon
 5. figure out a way to tell what the pokemon is weak, strong, average, no effect based on which pokemon (use types)
@@ -37,5 +38,3 @@ List of bugs that I have to fix in View Pokemon:
 - Gen7: decidueye (2x), oricorio (4x)
 * evolution_details can have more than 1 index in the list - look at mangnezone (gen4), leafeon (gen4), glaceon (gen4), sylveon (gen6)
 * other evolution triggers found in evolution details - update when needed
-
-# Flushed out todos for Types View

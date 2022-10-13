@@ -190,54 +190,81 @@ const ViewPokemon = (props) => {
         <>
             <NavBar/>
             <div>
-                {/*console.log(id)}
+                {console.log(id)}
                 {console.log(typeof(id))}
                 {console.log(pokemonSpecies)}
-                {console.log(pokemonSpecies.id)*/}
+                {console.log(pokemonSpecies.id)}
                 <h3>{pokemonSpecies.name}</h3>
                 <div className='container row'>
                     {/* A group of random details */}
                     <div className='border col-6'>
                         <h5>Basic Details</h5>
-                        {pokemonSpecies.has_gender_differences ? <p>There is a gender difference in appearace.</p> : <p>There is no gender difference in appearance.</p>}
+                        <p>There is {pokemonSpecies.has_gender_differences ? <span>a</span> : <span>no</span>} gender difference in appearance for {pokemonSpecies.name}.</p>
+                        {/* Special indicators like legendary/ mythical/ baby pokemon */}
                         {pokemonSpecies.is_baby ? <p>This pokemon is a baby species.</p> : null}
                         {pokemonSpecies.is_legendary ? <p>This is a legendary pokemon.</p> : null}
                         {pokemonSpecies.is_mythical ? <p>This is a mythical pokemon.</p> : null}
-                        {!pokemonSpecies.is_baby && !pokemonSpecies.is_legendary && !pokemonSpecies.is_mythical ? <p>No special indicators for this pokemon.</p> : null}
+                        {!pokemonSpecies.is_baby && !pokemonSpecies.is_legendary && !pokemonSpecies.is_mythical ? <p>No special indicators for {pokemonSpecies.name}.</p> : null}
                         {pokemonStats.base_experience ? <p>Will get {pokemonStats.base_experience} xp after defeating {id}.</p> : null}
-                        {pokemonSpecies.evolves_from_species ? <p>This pokemon evolves from <Link to={`/pokemon/${pokemonSpecies.evolves_from_species.name}`}>{pokemonSpecies.evolves_from_species.name}</Link></p> : null}
-                        <table className='container table table-striped border'>
+                        {/*pokemonSpecies.evolves_from_species ? <p>This pokemon evolves from <Link to={`/pokemon/${pokemonSpecies.evolves_from_species.name}`}>{pokemonSpecies.evolves_from_species.name}</Link></p> : null*/}
+                        {pokemonSpecies.generation ? <p>This pokemon is from {pokemonSpecies.generation.name} - {pokemonSpecies.generation.url}</p> : <p>Need to reload to get information.</p>}
+                        {pokemonSpecies.habitat ? <p>The habitat of {pokemonSpecies.name} is {pokemonSpecies.habitat.name} - {pokemonSpecies.habitat.url}</p> : null}
+                        {pokemonSpecies.color ? <p>The main color of this pokemon is {pokemonSpecies.color.name} - {pokemonSpecies.color.url}</p> : null}
+                        {pokemonSpecies.shape ? <p>The general shape of this pokemon is {pokemonSpecies.shape.name} - {pokemonSpecies.shape.url}</p> : null}
+                        {pokemonSpecies.evolution_chain ? <h6>Evolution Chain</h6> : <p>The {pokemonSpecies.name} has no evolution chain.</p>}
+                        {/*pokemonSpecies.evolves_from_species && pokemonSpecies.evolution_chain ? <p>A {pokemonSpecies.name} evolves from {pokemonSpecies.evolves_from_species.name} - {pokemonSpecies.evolves_from_species.url}</p> : <p>A {pokemonSpecies.name} is the first species in the evolution chain.</p>*/}
+                        {/* Pretty buggy over here */}
+                        {console.log("Evolution Chain in AJAX area:")}
+                        {console.log(evolutionChain)}
+                        {evolutionChain && pokemonSpecies.evolution_chain ? <table className='container table table-striped border'>
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th>Value</th>
+                                    <th>Grouping</th>
+                                    <th>Name</th>
                                     {/*<th>URL</th>*/}
+                                    <th>Evolution Trigger</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th>Pokemon Generation Introduction</th>
-                                    {/* There is a bug here for everytime a new load happens */}
-                                    <td>{pokemonSpecies.generation.name}</td>
-                                    {/*<td>{pokemonSpecies.generation.url}</td>*/}
+                                    <td>1st</td>
+                                    <td>
+                                        <Link to={`/pokemon/${evolutionChain.species.name}`}>{evolutionChain.species.name}</Link>
+                                    </td>
+                                    {/*<td>{evolutionChain.chain.species.name}</td>
+                                    <td>{evolutionChain.chain.species.url}</td>*/}
+                                    <td>--</td>
+                                    <td>This pokemon evolves to the rest in the list.</td>
                                 </tr>
-                                <tr>
-                                    <th>Habitat</th>
-                                    <td>{pokemonSpecies.habitat.name}</td>
-                                    {/*<td>{pokemonSpecies.habitat.url}</td>*/}
-                                </tr>
-                                <tr>
-                                    <th>Pokemon Color</th>
-                                    <td>{pokemonSpecies.color.name}</td>
-                                    {/*<td>{pokemonSpecies.color.url}</td>*/}
-                                </tr>
-                                <tr>
-                                    <th>Shape</th>
-                                    <td>{pokemonSpecies.shape.name}</td>
-                                    {/*<td>{pokemonSpecies.shape.url}</td>*/}
-                                </tr>
+                                {/* 2nd Evolutions - possibly some bugs here */}
+                                {evolutionChain.evolves_to.map((pokemon, index) => {
+                                    return (<tr key={index}>
+                                        <td>2nd</td>
+                                        <td>
+                                            <Link to={`/pokemon/${pokemon.species.name}`}>{pokemon.species.name}</Link>
+                                        </td>
+                                        {/*<td>{pokemon.species.name}</td>
+                                        <td>{pokemon.species.url}</td>*/}
+                                        <td>{pokemon.evolution_details[0].trigger.name}</td>
+                                        <td>Needs {pokemon.evolution_details[0].min_level ? <span>to be at level {pokemon.evolution_details[0].min_level} to evolve into {pokemon.species.name}</span> : null}.</td>
+                                    </tr>)
+                                })}
+                                {/* 3rd Evolution - possibly lots of bugs here */}
+                                {evolutionChain.evolves_to[0].evolves_to.map((pokemon, index) => {
+                                    return (<tr key={index}>
+                                        <td>3rd</td>
+                                        <td>
+                                            <Link to={`/pokemon/${pokemon.species.name}`}>{pokemon.species.name}</Link>
+                                        </td>
+                                        {/*<td>{pokemon.species.name}</td>
+                                        <td>{pokemon.species.url}</td>*/}
+                                        <td>{pokemon.evolution_details[0].trigger.name}</td>
+                                        <td>Needs {pokemon.evolution_details[0].min_level ? <span>to be at level {pokemon.evolution_details[0].min_level} to evolve into {pokemon.species.name}</span> : null}.</td>
+                                    </tr>)
+                                })}
                             </tbody>
-                        </table>
+                        </table> : null}
                     </div>
                     {/* Sprites here */}
                     <div className='border col-6'>
@@ -266,13 +293,20 @@ const ViewPokemon = (props) => {
                                 <img src={pokemonStats.sprites.front_shiny_female} alt='Shiny female front view'/>
                                 <img src={pokemonStats.sprites.back_shiny_female} alt='Shiny female back view'/>
                             </div> : null}
-                        </div> : <p>No Sprites available</p>}
+                        </div> : <p>No Sprites, Reload</p>}
                     </div>
                     {/* Base Stats */}
-                    <div className='border'>
+                    <div className='border col-12'>
                         <h5>Base Stats</h5>
+                        <h6>Summary</h6>
+                        {pokemonStats.stats ? <p>
+                            With a {pokemonSpecies.name} favor {pokemonStats.stats[1].base_stat >= pokemonStats.stats[3].base_stat ? <span>physical </span> : null}{pokemonStats.stats[1].base_stat == pokemonStats.stats[3].base_stat ? <span>and </span>: null}{pokemonStats.stats[1].base_stat <= pokemonStats.stats[3].base_stat ? <span>special </span> : null}attacks.
+                            Their physical attack is {pokemonStats.stats[1].base_stat > pokemonStats.stats[2].base_stat ? <span>greater than</span> : null}{pokemonStats.stats[1].base_stat == pokemonStats.stats[2].base_stat ? <span>equal to</span> : null}{pokemonStats.stats[1].base_stat < pokemonStats.stats[2].base_stat ? <span>less than</span> : null} their physical defense.
+                            Their special attack is {pokemonStats.stats[3].base_stat > pokemonStats.stats[4].base_stat ? <span>greater than</span> : null}{pokemonStats.stats[3].base_stat == pokemonStats.stats[4].base_stat ? <span>equal to</span> : null}{pokemonStats.stats[3].base_stat < pokemonStats.stats[4].base_stat ? <span>less than</span> : null} their special defense.
+                            The {pokemonSpecies.name} is a {pokemonStats.stats[0].base_stat >= pokemonStats.stats[5].base_stat ? <span>tanky pokemon </span>: null}{pokemonStats.stats[0].base_stat == pokemonStats.stats[5].base_stat ? <span>and a </span> : null}{pokemonStats.stats[0].base_stat <= pokemonStats.stats[5].base_stat ? <span>speedy pokemon </span> : null}because of hp and speed stats.
+                        </p> : <p>Reload for Stat Summary.</p>}
                         <h6>Pokedex listings</h6>
-                        <table className='container table table-striped border'>
+                        {pokemonSpecies.pokedex_numbers ? <table className='container table table-striped border'>
                             <thead>
                                 <tr>
                                     <th>Pokedex</th>
@@ -295,7 +329,7 @@ const ViewPokemon = (props) => {
                                     </tr>)
                                 })}
                             </tbody>
-                        </table>
+                        </table> : <p>Reload for Pokedex numbers.</p>}
                         <h6>Types</h6>
                         {pokemonStats.types ? <table className='container table table-striped border'>
                             <thead>
@@ -399,10 +433,10 @@ const ViewPokemon = (props) => {
                         </table> : <p>Please Reload for the Stats.</p>}
                     </div>
                     {/* Raising and Evolving pokemon */}
-                    <div className='border'>
+                    <div className='border col-6'>
                         <h5>Raising</h5>
                         <h6>Other details</h6>
-                        <table className='container table table-striped border'>
+                        {pokemonSpecies ? <table className='container table table-striped border'>
                             <thead>
                                 <tr>
                                     <th></th>
@@ -410,98 +444,47 @@ const ViewPokemon = (props) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {pokemonSpecies.capture_rate ? <tr>
                                     <th>Catch Rate</th>
                                     <td>{pokemonSpecies.capture_rate}/255 = {(parseInt(pokemonSpecies.capture_rate)/255)*100}%</td>
-                                </tr>
-                                <tr>
+                                </tr> : null}
+                                {pokemonSpecies.base_happiness ? <tr>
                                     <th>Base Happiness</th>
                                     <td>{pokemonSpecies.base_happiness}/255 = {(parseInt(pokemonSpecies.base_happiness)/255)*100}%</td>
-                                </tr>
-                                <tr>
+                                </tr> : null}
+                                {pokemonSpecies.growth_rate ? <tr>
                                     <th>Growth Rate</th>
                                     <td>{pokemonSpecies.growth_rate.name} = {pokemonSpecies.growth_rate.url}</td>
-                                </tr>
+                                </tr> : null}
                                 <tr>
                                     <th>Evolution Chain?</th>
                                     <td>{pokemonSpecies.evolution_chain ? <span>Yes</span> : <p>No</p>}</td>
                                     {/*<td>{pokemonSpecies.evolution_chain.url ? pokemonSpecies.evolution_chain.url : <span>None</span>}</td>*/}
                                 </tr>
                             </tbody>
-                        </table>
-                        <h6>Pokemon Evolution Tree</h6>
-                        {pokemonSpecies.evolves_from_species && pokemonSpecies.evolution_chain ? <p>A {pokemonSpecies.name} evolves from {pokemonSpecies.evolves_from_species.name} - {pokemonSpecies.evolves_from_species.url}</p> : <p>A {pokemonSpecies.name} is the first species in the evolution chain.</p>}
-                        {evolutionChain ? <table className='container table table-striped border'>
-                            <thead>
-                                <tr>
-                                    <th>Grouping</th>
-                                    <th>Name</th>
-                                    {/*<th>URL</th>*/}
-                                    <th>Evolution Trigger</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {/*console.log("Pokemon evolution chain")}
-                                {console.log(evolutionChain)*/}
-                                <tr>
-                                    <td>1st</td>
-                                    <td>
-                                        <Link to={`/pokemon/${evolutionChain.species.name}`}>{evolutionChain.species.name}</Link>
-                                    </td>
-                                    {/*<td>{evolutionChain.chain.species.name}</td>
-                                    <td>{evolutionChain.chain.species.url}</td>*/}
-                                    <td>--</td>
-                                    <td>This pokemon evolves to the rest in the list.</td>
-                                </tr>
-                                {/* 2nd Evolutions - possibly some bugs here */}
-                                {evolutionChain.evolves_to.map((pokemon, index) => {
-                                    return (<tr key={index}>
-                                        <td>2nd</td>
-                                        <td>
-                                            <Link to={`/pokemon/${pokemon.species.name}`}>{pokemon.species.name}</Link>
-                                        </td>
-                                        {/*<td>{pokemon.species.name}</td>
-                                        <td>{pokemon.species.url}</td>*/}
-                                        <td>{pokemon.evolution_details[0].trigger.name}</td>
-                                        <td>Needs {pokemon.evolution_details[0].min_level ? <span>to be at level {pokemon.evolution_details[0].min_level} to evolve into {pokemon.species.name}</span> : null}.</td>
-                                    </tr>)
-                                })}
-                                {/* 3rd Evolution - possibly lots of bugs here */}
-                                {evolutionChain.evolves_to[0].evolves_to.map((pokemon, index) => {
-                                    return (<tr key={index}>
-                                        <td>3rd</td>
-                                        <td>
-                                            <Link to={`/pokemon/${pokemon.species.name}`}>{pokemon.species.name}</Link>
-                                        </td>
-                                        {/*<td>{pokemon.species.name}</td>
-                                        <td>{pokemon.species.url}</td>*/}
-                                        <td>{pokemon.evolution_details[0].trigger.name}</td>
-                                        <td>Needs {pokemon.evolution_details[0].min_level ? <span>to be at level {pokemon.evolution_details[0].min_level} to evolve into {pokemon.species.name}</span> : null}.</td>
-                                    </tr>)
-                                })}
-                            </tbody>
-                        </table> : <p>There is no evolution table for {pokemonSpecies.name}.</p>}
+                        </table> : <p>Need to Reload for this table.</p>}
                     </div>
-                    <div className='border'>
+                    <div className='border col-6'>
                         <h5>Breeding</h5>
-                        <h6>Egg and Hatching</h6>
-                        <table className='container table table-striped border'>
-                            <thead>
-                                <tr>
-                                    <th>Egg Group</th>
-                                    <th>URL</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {pokemonSpecies.egg_groups.map((group, index) => {
-                                    return (<tr key={index}>
-                                        <td>{group.name}</td>
-                                        <td>{group.url}</td>
-                                    </tr>)
-                                })}
-                            </tbody>
-                        </table>
+                        {pokemonSpecies.egg_groups ? <div>
+                            <h6>Egg and Hatching</h6>
+                            <table className='container table table-striped border'>
+                                <thead>
+                                    <tr>
+                                        <th>Egg Group</th>
+                                        <th>URL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {pokemonSpecies.egg_groups.map((group, index) => {
+                                        return (<tr key={index}>
+                                            <td>{group.name}</td>
+                                            <td>{group.url}</td>
+                                        </tr>)
+                                    })}
+                                </tbody>
+                            </table>
+                        </div> : <p>Need to reload for egg groups.</p>}
                         <table className='container table table-striped border'>
                             <thead>
                                 <tr>
@@ -526,7 +509,7 @@ const ViewPokemon = (props) => {
             {/* Moving through National dex order *}
             <div>
                 <h3>In National Pokedex Order</h3>
-                {parseInt(pokemon.id)-1 > 0 ? <span><Link to={`/pokemon/${parseInt(pokemon.id)-1}`}>previous</Link> | </span> : null}
+                {parseInt(pokemonSpecies.id)-1 > 0 ? <span><Link to={`/pokemon/${parseInt(pokemonSpecies.id)-1}`}>previous</Link> | </span> : null}
                 <Link to={`/pokemon/${parseInt(pokemon.id)+1}`}>next</Link>
             </div>
             {**/}
