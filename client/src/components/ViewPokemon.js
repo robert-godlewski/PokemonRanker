@@ -25,7 +25,7 @@ const ViewPokemon = (props) => {
     const [pokemonStats, setPokemonStats] = useState({});
 
     // Notifier in the Console
-    console.log(`Loading ${id} stats`)
+    console.log(`Loading ${id} stats`);
 
     // Function for grabbing the index of the evolution chain
     // url is a str

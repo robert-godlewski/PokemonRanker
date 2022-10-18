@@ -10,6 +10,7 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 import IndexPage from './components/IndexPage';
 import ViewPokemonList from './components/ViewPokemonList';
 import ViewPokemon from './components/ViewPokemon';
+import ViewTypes from './components/ViewTypes';
 
 
 function App() {
@@ -18,8 +19,10 @@ function App() {
 
   const [pokedexList, setPokedexList] = useState([]);
   const [pokemonList, setPokemonList] = useState([]);
+  const [typeList, setTypeList] = useState([]);
   // Not too sure if I really need this variable
   const [pokemon, setPokemon] = useState([]);
+  const [type, setType] = useState([]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,6 +35,8 @@ function App() {
               element={<IndexPage
                 pokedexList={pokedexList}
                 setPokedexList={setPokedexList}
+                typeList={typeList}
+                setTypeList={setTypeList}
               />}
             />
             {/* Individual Pokedex */}
@@ -48,6 +53,14 @@ function App() {
               element={<ViewPokemon
                 pokemon={pokemon}
                 setPokemon={setPokemon}
+              />}
+            />
+            {/* Individual Types */}
+            <Route
+              path='/type/:id'
+              element={<ViewTypes
+                type={type}
+                setType={setType}
               />}
             />
           </Routes>
